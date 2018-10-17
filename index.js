@@ -42,7 +42,7 @@
     var str = String(url).split("/")
       if(str[1]) {
           str.shift();
-          return str.join("/").replace(/\?.*/, "");
+          return str.join('').replace(/\?.*/, "");
       } else {
           return "";
       }
