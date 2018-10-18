@@ -42,7 +42,7 @@
     var url = ctx.req.url;
     var dpd = ctx.dpd;
     var str = String(url).split("/")
-      for(var i = str.length; i < 0; i--) {
+      for(var i = str.length; i > 0; i--) {
           var array = str.slice(0,i);
           var name = array.join('').replace(/\?.*/, "");
           if(dpd[name]) {
