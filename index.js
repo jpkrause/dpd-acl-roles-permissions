@@ -38,14 +38,18 @@
     }
   }
 
-  var getResourceNameFromUrl = function(url){
+  var getResourceNameFromUrl = function(ctx){
+    var url = ctx.req.url;
+    var dpd = ctx.dpd;
     var str = String(url).split("/")
-      if(str[1]) {
-          str.shift();
-          return str.join('').replace(/\?.*/, "");
-      } else {
-          return "";
-      }
+      for(var i = str.length; i < 0; i--) {
+          var array = str.slice(0,i);
+          var name = array.join('').replace(/\?.*/, "");
+          if(dpd[name]) {
+              return name;
+          }
+      }    
+      return "";
   }
 
   var acl = function(ctx,data,config){
@@ -58,7 +62,7 @@
     user = user ? user : {}
 
     userroles = user && user.roles ? user.roles : []
-    var resourceName = getResourceNameFromUrl(this.req.url)
+    var resourceName = getResourceNameFromUrl(this)
     if( !resourceName || !this.dpd[ resourceName ] ) return
     var resourceConfig = this.dpd[ resourceName ].getResource().config
  
@@ -89,7 +93,7 @@
   }
 
   monkeypatch( Collection.prototype,'find',function(original,ctx,fn){
-    var resourceName = String( getResourceNameFromUrl(ctx.req.url) ).replace(/-/g, '')
+    var resourceName = String( getResourceNameFromUrl(ctx) ).replace(/-/g, '')
     if( !resourceName ) return
     var resourceConfig = ctx.dpd[ resourceName ].getResource().config
     var aclConfig = getAclConfig(resourceName)
